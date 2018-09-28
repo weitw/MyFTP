@@ -1,0 +1,217 @@
+#  user's files在Python IDLE中实现清屏
+
+2017年06月28日 10:20:41
+
+阅读数：521
+
+这里写图片描述 
+
+
+
+屏幕东西太多，需要清屏，在windows的窗口清屏命令是cls，在Python IDLE中的快捷键是Ctrl+L 
+
+
+
+不过这个快捷键默认是没有的，需要进行一些操作 
+
+
+
+一、将下面的代码复制保存到新建的clearwindow.py中
+
+"""
+
+
+
+Clear Window Extension
+
+Version: 0.2
+
+
+
+Author: Roger D. Serwy
+
+        roger.serwy@gmail.com
+
+
+
+Date: 2009-06-14
+
+
+
+It provides "Clear Shell Window" under "Options"
+
+with ability to undo.
+
+
+
+Add these lines to config-extensions.def
+
+
+
+[ClearWindow]
+
+enable=1
+
+enable_editor=0
+
+enable_shell=1
+
+[ClearWindow_cfgBindings]
+
+clear-window=<Control-Key-l>
+
+
+
+
+
+"""
+
+
+
+class ClearWindow:
+
+
+
+    menudefs = [
+
+        ('options', [None,
+
+               ('Clear Shell Window', '<<clear-window>>'),
+
+       ]),]
+
+
+
+    def __init__(self, editwin):
+
+        self.editwin = editwin
+
+        self.text = self.editwin.text
+
+        self.text.bind("<<clear-window>>", self.clear_window2)
+
+
+
+        self.text.bind("<<undo>>", self.undo_event)  # add="+" doesn't work
+
+
+
+    def undo_event(self, event):
+
+        text = self.text
+
+
+
+        text.mark_set("iomark2", "iomark")
+
+        text.mark_set("insert2", "insert")
+
+        self.editwin.undo.undo_event(event)
+
+
+
+        # fix iomark and insert
+
+        text.mark_set("iomark", "iomark2")
+
+        text.mark_set("insert", "insert2")
+
+        text.mark_unset("iomark2")
+
+        text.mark_unset("insert2")
+
+
+
+
+
+    def clear_window2(self, event): # Alternative method
+
+        # work around the ModifiedUndoDelegator
+
+        text = self.text
+
+        text.undo_block_start()
+
+        text.mark_set("iomark2", "iomark")
+
+        text.mark_set("iomark", 1.0)
+
+        text.delete(1.0, "iomark2 linestart")
+
+        text.mark_set("iomark", "iomark2")
+
+        text.mark_unset("iomark2")
+
+        text.undo_block_stop()
+
+        if self.text.compare('insert', '<', 'iomark'):
+
+            self.text.mark_set('insert', 'end-1c')
+
+        self.editwin.set_line_and_column()
+
+
+
+    def clear_window(self, event):
+
+        # remove undo delegator
+
+        undo = self.editwin.undo
+
+        self.editwin.per.removefilter(undo)
+
+
+
+        # clear the window, but preserve current command
+
+        self.text.delete(1.0, "iomark linestart")
+
+        if self.text.compare('insert', '<', 'iomark'):
+
+            self.text.mark_set('insert', 'end-1c')
+
+        self.editwin.set_line_and_column()
+
+
+
+        # restore undo delegator
+
+        self.editwin.per.insertfilter(undo)
+
+
+
+二、将这个文件放在Python X\Lib\idlelib目录下（X为你的python版本） 
+
+
+
+三、然后在这个目录下找到config-extensions.def这个文件（idle扩展的配置文件），以记事本的方式    打开它 
+
+
+
+四、打开config-extensions.def 后在句末加上如下代码
+
+[ClearWindow]
+
+enable=1
+
+enable_editor=0
+
+enable_shell=1
+
+[ClearWindow_cfgBindings]
+
+clear-window=<Control-Key-l>   
+
+
+
+#注释：上面clear-window=<Control-Key-l>中的l可以改为你想设置的其他的键，我用的是;。也就是我的清屏是ctrl+;
+
+
+
+五、然后保存退出就可以了。
+
+打开python的idle，看看options是不是多了一个选项clear shell window ctrl+L 
+
+
+
+这时ctrl+l就可以实现清屏了
