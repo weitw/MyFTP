@@ -21,7 +21,7 @@ class MyTCPHandler(object):
     def handle(self):
         self.buff = 2048
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind(('192.168.43.232', 8001))
+        self.sock.bind(('127.0.0.1', 8001))
         self.sock.listen(5)
         print("Server is Running".center(30, "*"))
         while True:
