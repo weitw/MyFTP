@@ -21,7 +21,7 @@ class Client(object):
         self.buff = 2048
         try:
             self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.conn.connect(('192.168.43.232', 8001))
+            self.conn.connect(('127.0.0.1', 8001))
             print('The server is running normally')
         except Exception as e:
             print('Server exception：', e)
