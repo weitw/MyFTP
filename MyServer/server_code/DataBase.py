@@ -10,9 +10,9 @@ class MdFive(object):
     def __init__(self, un, pw):
         self.un = un
         self.pw = pw
-        self.info_path = r"D:\Projects\net_programming\MyFTP\MyServer\Data\UserInfo\\"  # 用户信息库的路径
+        self.info_path = r"../Data/UserInfo/"  # 用户信息库的路径
         file = os.listdir(self.info_path)
-        self.file_info = self.info_path + "\\" + file[0]  # MyFTP/MyServer/Data/UserInfo/userinfo.txt
+        self.file_info = self.info_path + "/" + file[0]  # MyFTP/MyServer/Data/UserInfo/userinfo.txt
 
     def in_md5(self):
         # print("调用md5方法".center(30, '.'))
@@ -70,6 +70,6 @@ if __name__ == '__main__':
     if md5.save_md5():  # 如果写入成功
         md5.get_md5()
     else:
-        print('error')
+        print('0')
 
 
